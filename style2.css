@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.navbar h1 {
+  font-size: 22px;
+}
+
+.navbar nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 16px;
+  font-size: 15px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: 0.3s;
+  background: rgba(255,255,255,0.15);
+}
+
+.navbar nav a:hover {
+  background: #ff6b6b;
+}
+
+.navbar nav a.active {
+  background: #ffd93d;
+  color: #222;
+  font-weight: bold;
+}
+
+/* Container */
+.container {
+  max-width: 850px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Summary Cards */
+.sumer-card, .card {
+  flex: 1;
+  min-width: 150px;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.sumer-card:hover, .card:hover {
+  transform: translateY(-4px);
+}
+
+.sumer-card {
+  background: linear-gradient(135deg, #ff6a88, #ff9a8b);
+}
+
+.card {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+.sumer-card h3, .card h3 {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.sumer-card p, .card p {
+  font-size: 26px;
+  font-weight: bold;
+}
+/* Form fields styling */
+.box label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin: 8px 0 4px;
+}
+
+.box input, .box select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.box button[type="submit"] {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* Item list */
+.item-list {
+  list-style: none;
+}
+
+.item-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.item-list li:last-child {
+  border-bottom: none;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #eaf1fb;
+  color: #2c3e50;
+  margin-left: 6px;
+}
+
+/* Rent split checkboxes */
+#rentSplitBox {
+  background: #f8f9fb;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+#rentSplitBox label {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+#rentSplitBox input[type="checkbox"] {
+  width: auto;
+  accent-color: #6a11cb;
+  cursor: pointer;
+}
+
+/* Rent history list styling */
+#rentList li {
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  padding: 14px 0;
+}
+
+#rentList li strong {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+#rentList li small {
+  color: #777;
+  line-height: 1.6;
+}
+
+#rentList .delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 0;
+}
+#expSplitBox {
+  background: #f8f9fb;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+#expSplitBox label {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+#expSplitBox input[type="checkbox"] {
+  width: auto;
+  accent-color: #6a11cb;
+  cursor: pointer;
+}
+
+#expenseList li {
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  padding: 14px 0;
+}
+
+#expenseList li strong {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+#expenseList li small {
+  color: #777;
+  line-height: 1.6;
+  display: block;
+}
+
+#expenseList .delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 0;
+}
+
+#allExpenseList li, #allItemsList li {
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  padding: 14px 0;
+}
+
+#allExpenseList li strong, #allItemsList li strong {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+#allExpenseList li small, #allItemsList li small {
+  color: #777;
+  line-height: 1.6;
+  display: block;
+}
+
+#allExpenseList .delete-btn, #allItemsList .delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 0;
+}
+
+.tag.positive { background: #e8f8f0; color: #27ae60; }
+.tag.negative { background: #fdecea; color: #c0392b; }

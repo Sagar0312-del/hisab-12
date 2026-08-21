@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hisab book - ghar ka saman</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <h1> flat hisab</h1>
+        <nav>
+            <a href="index2.html">home </a>
+            <a href="saman.html" class="active"> ghar ka saman </a>
+            <a href="rental.html"> rental kharcha </a>
+            <a href="wxpense.html"> kharcha add</a>
+            <a href="history.html">history</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>📦 Naya Saman Add Karo</h2>
+            <form id="samanForm">
+                <label>Item ka naam</label>
+                <input type="text" id="itemName" placeholder="jaise: Gas cylinder, Cooker" required>
+
+                <label>Kisne liya</label>
+                <select id="itemBoughtBy" required></select>
+
+                <label>Kitne ka hai</label>
+                <input type="number" id="itemPrice" placeholder="Price (₹)">
+
+                <label>Date</label>
+                <input type="date" id="itemDate" required>
+
+                <label>Shared ya Personal</label>
+                <select id="itemType">
+                    <option value="Shared">Shared</option>
+                    <option value="Personal">Personal</option>
+                </select>
+
+                <label>Note (optional)</label>
+                <input type="text" id="itemNote" placeholder="jaise: second hand hai">
+
+                <button type="submit">+ Saman Add Karo</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>🗂 Saman List</h2>
+            <ul class="item-list" id="itemList">
+                <li class="empty-msg">Abhi koi saman add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="sagar1203.js"></script>
+    <script>
+        // Members ki dropdown fill karo
+        fillMemberSelect(document.getElementById('itemBoughtBy'));
+
+        // Aaj ki date default set karo
+        document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
+
+        function renderItems() {
+            const items = getItems();
+            const list = document.getElementById('itemList');
+            list.innerHTML = '';
+
+            if (items.length === 0) {
+                list.innerHTML = '<li class="empty-msg">Abhi koi saman add nahi hua hai</li>';
+                return;
+            }
+
+            items.slice().reverse().forEach((item) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong>
+                        <span class="tag">${item.type}</span><br>
+                        <small>${item.boughtBy} • ${item.date} ${item.price ? '• ₹' + item.price : ''}</small>
+                        ${item.note ? `<br><small>📝 ${item.note}</small>` : ''}
+                    </div>
+                `;
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Hatao';
+                delBtn.className = 'delete-btn';
+                delBtn.onclick = () => {
+                    const updated = getItems().filter(i => i.id !== item.id);
+                    saveItems(updated);
+                    renderItems();
+                };
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('samanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const items = getItems();
+            items.push({
+                id: generateId(),
+                name: document.getElementById('itemName').value,
+                boughtBy: document.getElementById('itemBoughtBy').value,
+                price: document.getElementById('itemPrice').value || 0,
+                date: document.getElementById('itemDate').value,
+                type: document.getElementById('itemType').value,
+                note: document.getElementById('itemNote').value
+            });
+            saveItems(items);
+            this.reset();
+            document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
+            renderItems();
+        });
+
+        renderItems();
+    </script>
+</body>
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

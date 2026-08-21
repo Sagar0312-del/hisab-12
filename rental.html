@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hisab book - rental kharcha</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <h1> flat hisab</h1>
+        <nav>
+            <a href="index2.html">home </a>
+            <a href="saman.html"> ghar ka saman </a>
+            <a href="rental.html" class="active"> rental kharcha </a>
+            <a href="wxpense.html"> kharcha add</a>
+            <a href="history.html">history</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>🏠 Rent Add Karo</h2>
+            <form id="rentForm">
+                <label>Kisne rent diya (paid by)</label>
+                <select id="rentPaidBy" required></select>
+
+                <label>Kitna rent hai</label>
+                <input type="number" id="rentAmount" placeholder="Amount (₹)" required>
+
+                <label>Month / Note</label>
+                <input type="text" id="rentNote" placeholder="jaise: August 2026 ka rent">
+
+                <label>Date</label>
+                <input type="date" id="rentDate" required>
+
+                <label>Kis-kis me split hoga</label>
+                <div id="rentSplitBox" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+
+                <button type="submit">+ Rent Add Karo</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>📜 Rent History</h2>
+            <ul class="item-list" id="rentList">
+                <li class="empty-msg">Abhi koi rent add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="sagar1203.js"></script>
+    <script>
+        // Dropdown aur checkboxes fill karo
+        fillMemberSelect(document.getElementById('rentPaidBy'));
+        fillMemberCheckboxes(document.getElementById('rentSplitBox'), 'rentSplit');
+
+        // Aaj ki date default
+        document.getElementById('rentDate').value = new Date().toISOString().split('T')[0];
+
+        function renderRents() {
+            const expenses = getExpenses().filter(e => e.category === 'Rent');
+            const list = document.getElementById('rentList');
+            list.innerHTML = '';
+
+            if (expenses.length === 0) {
+                list.innerHTML = '<li class="empty-msg">Abhi koi rent add nahi hua hai</li>';
+                return;
+            }
+
+            expenses.slice().reverse().forEach((exp) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${formatRupee(exp.amount)}</strong> — ${exp.paidBy} ne diya<br>
+                        <small>${exp.date} ${exp.note ? '• ' + exp.note : ''}</small><br>
+                        <small>Split: ${exp.splitAmong.join(', ')}</small>
+                    </div>
+                `;
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Hatao';
+                delBtn.className = 'delete-btn';
+                delBtn.onclick = () => {
+                    const updated = getExpenses().filter(e => e.id !== exp.id);
+                    saveExpenses(updated);
+                    renderRents();
+                };
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('rentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const checkedBoxes = document.querySelectorAll('input[name="rentSplit"]:checked');
+            const splitAmong = Array.from(checkedBoxes).map(cb => cb.value);
+
+            if (splitAmong.length === 0) {
+                alert('Kam se kam ek member select karo split ke liye');
+                return;
+            }
+
+            const expenses = getExpenses();
+            expenses.push({
+                id: generateId(),
+                paidBy: document.getElementById('rentPaidBy').value,
+                amount: Number(document.getElementById('rentAmount').value),
+                category: 'Rent',
+                note: document.getElementById('rentNote').value,
+                date: document.getElementById('rentDate').value,
+                splitAmong: splitAmong
+            });
+            saveExpenses(expenses);
+            this.reset();
+            document.getElementById('rentDate').value = new Date().toISOString().split('T')[0];
+            fillMemberCheckboxes(document.getElementById('rentSplitBox'), 'rentSplit');
+            renderRents();
+        });
+
+        renderRents();
+    </script>
+</body>
+</html>

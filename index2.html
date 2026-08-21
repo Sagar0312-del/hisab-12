@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hisab book - home </title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <h1> flat hisab</h1>
+        <nav>
+            <a href="index2.html" class="active">home </a>
+            <a href="saman.html"> ghar ka saman </a>
+            <a href="rental.html"> rental kharcha </a>
+            <a href="wxpense.html"> kharcha add</a>
+            <a href="history.html">history</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="sumer-card">
+            <h3> total kharcha </h3>
+            <p id="totalExpense"> ₹0</p>
+        </div>
+        <div class="card">
+            <h3> total members</h3>
+            <p id="totalMember">0</p>
+        </div>
+        <div class="card">
+            <h3> total saman items</h3>
+            <p id="totalItems">0</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>👥 Members</h2>
+            <form id="memberForm">
+                <input type="text" id="newMemberInput" placeholder="Naya member ka naam likho...">
+                <button type="submit">+ Add Member</button>
+            </form>
+            <ul class="balance-list" id="memberList"></ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>💰 Balance Summary</h2>
+            <ul class="balance-list" id="balanceList">
+                <li class="empty-msg">Abhi koi kharcha add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="sagar1203.js"></script>
+</body>
+</html>

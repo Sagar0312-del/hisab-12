@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hisab book - history</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <h1> flat hisab</h1>
+        <nav>
+            <a href="index2.html">home </a>
+            <a href="saman.html"> ghar ka saman </a>
+            <a href="rental.html"> rental kharcha </a>
+            <a href="wxpense.html"> kharcha add</a>
+            <a href="history.html" class="active">history</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>💰 Final Balance Summary</h2>
+            <ul class="balance-list" id="finalBalanceList">
+                <li class="empty-msg">Abhi koi kharcha add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>🧾 Sare Kharche (Rent + Expenses)</h2>
+            <ul class="item-list" id="allExpenseList">
+                <li class="empty-msg">Abhi koi kharcha add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>📦 Sara Saman</h2>
+            <ul class="item-list" id="allItemsList">
+                <li class="empty-msg">Abhi koi saman add nahi hua hai</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="sagar1203.js"></script>
+    <script>
+        function renderFinalBalances() {
+            const balances = calculateBalances();
+            const list = document.getElementById('finalBalanceList');
+            list.innerHTML = '';
+
+            const names = Object.keys(balances);
+            if (names.length === 0 || getExpenses().length === 0) {
+                list.innerHTML = '<li class="empty-msg">Abhi koi kharcha add nahi hua hai</li>';
+                return;
+            }
+
+            names.forEach(name => {
+                const bal = balances[name];
+                let text, cls;
+                if (bal > 0.5) { text = `+${formatRupee(bal)} lene hai`; cls = 'positive'; }
+                else if (bal < -0.5) { text = `${formatRupee(bal)} dene hai`; cls = 'negative'; }
+                else { text = 'Barabar ✔'; cls = ''; }
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${name}</span><span class="tag ${cls}">${text}</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        function renderAllExpenses() {
+            const expenses = getExpenses().slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+            const list = document.getElementById('allExpenseList');
+            list.innerHTML = '';
+
+            if (expenses.length === 0) {
+                list.innerHTML = '<li class="empty-msg">Abhi koi kharcha add nahi hua hai</li>';
+                return;
+            }
+
+            expenses.forEach((exp) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${formatRupee(exp.amount)}</strong>
+                        <span class="tag">${exp.category}</span><br>
+                        <small>${exp.paidBy} ne diya • ${exp.date}</small><br>
+                        ${exp.note ? `<small>📝 ${exp.note}</small><br>` : ''}
+                        <small>Split: ${exp.splitAmong.join(', ')}</small>
+                    </div>
+                `;
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Hatao';
+                delBtn.className = 'delete-btn';
+                delBtn.onclick = () => {
+                    const updated = getExpenses().filter(e => e.id !== exp.id);
+                    saveExpenses(updated);
+                    renderAllExpenses();
+                    renderFinalBalances();
+                };
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        function renderAllItems() {
+            const items = getItems().slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+            const list = document.getElementById('allItemsList');
+            list.innerHTML = '';
+
+            if (items.length === 0) {
+                list.innerHTML = '<li class="empty-msg">Abhi koi saman add nahi hua hai</li>';
+                return;
+            }
+
+            items.forEach((item) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong>
+                        <span class="tag">${item.type}</span><br>
+                        <small>${item.boughtBy} • ${item.date} ${item.price ? '• ₹' + item.price : ''}</small>
+                        ${item.note ? `<br><small>📝 ${item.note}</small>` : ''}
+                    </div>
+                `;
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Hatao';
+                delBtn.className = 'delete-btn';
+                delBtn.onclick = () => {
+                    const updated = getItems().filter(i => i.id !== item.id);
+                    saveItems(updated);
+                    renderAllItems();
+                };
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        renderFinalBalances();
+        renderAllExpenses();
+        renderAllItems();
+    </script>
+</body>
+</html>
