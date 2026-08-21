@@ -114,7 +114,7 @@ function fillMemberCheckboxes(containerElement, name) {
 }
 
 /* ================================
-   HOME PAGE LOGIC (index2.html)
+   HOME PAGE LOGIC (index.html)
    Ye sirf tab chalega jab in IDs wale
    elements page pe maujood honge
 ================================ */
@@ -185,7 +185,7 @@ function renderHomePage() {
         saveMembers(members);
         input.value = '';
         renderHomePage();
-      }
+      } 
     });
   }
 }
