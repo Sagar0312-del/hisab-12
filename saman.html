@@ -56,12 +56,13 @@
         </div>
     </div>
 
-    <script src="sagar1203.js"></script>
+    <script type="module" src="sagar1203.js"></script>
     <script>
-        // Members ki dropdown fill karo
-        fillMemberSelect(document.getElementById('itemBoughtBy'));
+        function initPage() {
+            fillMemberSelect(document.getElementById('itemBoughtBy'));
+            renderItems();
+        }
 
-        // Aaj ki date default set karo
         document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
 
         function renderItems() {
@@ -90,7 +91,6 @@
                 delBtn.onclick = () => {
                     const updated = getItems().filter(i => i.id !== item.id);
                     saveItems(updated);
-                    renderItems();
                 };
                 li.appendChild(delBtn);
                 list.appendChild(li);
@@ -112,25 +112,10 @@
             saveItems(items);
             this.reset();
             document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
-            renderItems();
         });
 
-        renderItems();
+        window.addEventListener('hisabDataUpdated', initPage);
+        initPage();
     </script>
 </body>
-</html> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</html>

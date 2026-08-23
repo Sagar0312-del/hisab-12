@@ -46,8 +46,14 @@
         </div>
     </div>
 
-    <script src="sagar1203.js"></script>
+    <script type="module" src="sagar1203.js"></script>
     <script>
+        function initPage() {
+            renderFinalBalances();
+            renderAllExpenses();
+            renderAllItems();
+        }
+
         function renderFinalBalances() {
             const balances = calculateBalances();
             const list = document.getElementById('finalBalanceList');
@@ -98,8 +104,6 @@
                 delBtn.onclick = () => {
                     const updated = getExpenses().filter(e => e.id !== exp.id);
                     saveExpenses(updated);
-                    renderAllExpenses();
-                    renderFinalBalances();
                 };
                 li.appendChild(delBtn);
                 list.appendChild(li);
@@ -132,16 +136,14 @@
                 delBtn.onclick = () => {
                     const updated = getItems().filter(i => i.id !== item.id);
                     saveItems(updated);
-                    renderAllItems();
                 };
                 li.appendChild(delBtn);
                 list.appendChild(li);
             });
         }
 
-        renderFinalBalances();
-        renderAllExpenses();
-        renderAllItems();
+        window.addEventListener('hisabDataUpdated', initPage);
+        initPage();
     </script>
 </body>
 </html>

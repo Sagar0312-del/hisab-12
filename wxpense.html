@@ -59,17 +59,17 @@
         </div>
     </div>
 
-    <script src="sagar1203.js"></script>
+    <script type="module" src="sagar1203.js"></script>
     <script>
-        // Dropdown aur checkboxes fill karo
-        fillMemberSelect(document.getElementById('expPaidBy'));
-        fillMemberCheckboxes(document.getElementById('expSplitBox'), 'expSplit');
+        function initPage() {
+            fillMemberSelect(document.getElementById('expPaidBy'));
+            fillMemberCheckboxes(document.getElementById('expSplitBox'), 'expSplit');
+            renderExpenses();
+        }
 
-        // Aaj ki date default
         document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
 
         function renderExpenses() {
-            // Rent wale expenses is page pe nahi dikhane (wo rental.html pe hain)
             const expenses = getExpenses().filter(e => e.category !== 'Rent');
             const list = document.getElementById('expenseList');
             list.innerHTML = '';
@@ -96,7 +96,6 @@
                 delBtn.onclick = () => {
                     const updated = getExpenses().filter(e => e.id !== exp.id);
                     saveExpenses(updated);
-                    renderExpenses();
                 };
                 li.appendChild(delBtn);
                 list.appendChild(li);
@@ -128,10 +127,10 @@
             this.reset();
             document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
             fillMemberCheckboxes(document.getElementById('expSplitBox'), 'expSplit');
-            renderExpenses();
         });
 
-        renderExpenses();
+        window.addEventListener('hisabDataUpdated', initPage);
+        initPage();
     </script>
 </body>
 </html>

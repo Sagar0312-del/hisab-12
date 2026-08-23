@@ -1,38 +1,59 @@
 /* ================================
-   DATA STORAGE (localStorage based)
+   FIREBASE SETUP
 ================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getFirestore, doc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-function getMembers() {
-  const data = localStorage.getItem('hisab_members');
-  return data ? JSON.parse(data) : [];
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyCgU-FJ4d8ZvYQd2mwu3ZIMTwkdFSL2mp4",
+  authDomain: "hisab-sagar.firebaseapp.com",
+  projectId: "hisab-sagar",
+  storageBucket: "hisab-sagar.firebasestorage.app",
+  messagingSenderId: "579173761322",
+  appId: "1:579173761322:web:923f7181731bcd454a9e53"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const membersRef = doc(db, "hisab", "members");
+const expensesRef = doc(db, "hisab", "expenses");
+const itemsRef = doc(db, "hisab", "items");
+
+/* ================================
+   LOCAL CACHE (Firestore se sync hoga)
+================================ */
+let membersCache = [];
+let expensesCache = [];
+let itemsCache = [];
+
+/* ================================
+   GET / SAVE FUNCTIONS
+   (Ab ye Firebase se kaam karenge)
+================================ */
+function getMembers() { return membersCache; }
 function saveMembers(members) {
-  localStorage.setItem('hisab_members', JSON.stringify(members));
+  membersCache = members;
+  setDoc(membersRef, { list: members });
 }
 
-function getExpenses() {
-  const data = localStorage.getItem('hisab_expenses');
-  return data ? JSON.parse(data) : [];
-}
-
+function getExpenses() { return expensesCache; }
 function saveExpenses(expenses) {
-  localStorage.setItem('hisab_expenses', JSON.stringify(expenses));
+  expensesCache = expenses;
+  setDoc(expensesRef, { list: expenses });
 }
 
-function getItems() {
-  const data = localStorage.getItem('hisab_items');
-  return data ? JSON.parse(data) : [];
-}
-
+function getItems() { return itemsCache; }
 function saveItems(items) {
-  localStorage.setItem('hisab_items', JSON.stringify(items));
+  itemsCache = items;
+  setDoc(itemsRef, { list: items });
 }
 
 /* ================================
    HELPERS
 ================================ */
-
 function formatRupee(num) {
   return '₹' + Number(num).toFixed(2);
 }
@@ -40,13 +61,6 @@ function formatRupee(num) {
 function generateId() {
   return Date.now().toString() + Math.floor(Math.random() * 1000);
 }
-
-/* ================================
-   BALANCE CALCULATION
-   Har expense me: paidBy ne total amount diya,
-   splitAmong logo ke beech barabar bant jayega.
-   Balance = jitna diya - jitna uska share tha
-================================ */
 
 function calculateBalances() {
   const members = getMembers();
@@ -57,28 +71,21 @@ function calculateBalances() {
   expenses.forEach(exp => {
     const splitCount = exp.splitAmong.length || 1;
     const share = exp.amount / splitCount;
-
     if (balances.hasOwnProperty(exp.paidBy)) {
       balances[exp.paidBy] += Number(exp.amount);
     }
-
     exp.splitAmong.forEach(person => {
       if (balances.hasOwnProperty(person)) {
         balances[person] -= share;
       }
     });
   });
-
   return balances;
 }
 
 function getTotalExpense() {
   return getExpenses().reduce((sum, e) => sum + Number(e.amount), 0);
 }
-
-/* ================================
-   FILL MEMBER DROPDOWN (select tag)
-================================ */
 
 function fillMemberSelect(selectElement) {
   const members = getMembers();
@@ -91,22 +98,16 @@ function fillMemberSelect(selectElement) {
   });
 }
 
-/* ================================
-   FILL MEMBER CHECKBOXES (split section)
-================================ */
-
 function fillMemberCheckboxes(containerElement, name) {
   const members = getMembers();
   containerElement.innerHTML = '';
   members.forEach(m => {
     const label = document.createElement('label');
-
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.name = name;
     cb.value = m;
     cb.checked = true;
-
     label.appendChild(cb);
     label.appendChild(document.createTextNode(m));
     containerElement.appendChild(label);
@@ -115,10 +116,7 @@ function fillMemberCheckboxes(containerElement, name) {
 
 /* ================================
    HOME PAGE LOGIC (index.html)
-   Ye sirf tab chalega jab in IDs wale
-   elements page pe maujood honge
 ================================ */
-
 function renderHomePage() {
   const totalExpenseEl = document.getElementById('totalExpense');
   const totalMemberEl = document.getElementById('totalMember');
@@ -126,7 +124,6 @@ function renderHomePage() {
   const memberListEl = document.getElementById('memberList');
   const balanceListEl = document.getElementById('balanceList');
 
-  // Agar home page ke elements hi nahi hain, to yahi ruk jao
   if (!totalExpenseEl && !memberListEl && !balanceListEl) return;
 
   const members = getMembers();
@@ -146,7 +143,6 @@ function renderHomePage() {
       btn.onclick = () => {
         const updated = getMembers().filter((_, idx) => idx !== i);
         saveMembers(updated);
-        renderHomePage();
       };
       li.appendChild(btn);
       memberListEl.appendChild(li);
@@ -184,20 +180,50 @@ function renderHomePage() {
         members.push(name);
         saveMembers(members);
         input.value = '';
-        renderHomePage();
-      } 
+      }
     });
   }
 }
 
 /* ================================
-   AUTO RUN ON PAGE LOAD
-   Ye home page ke elements dhoondh ke
-   apne aap render kar dega. Baaki pages
-   (saman/rental/wxpense/history) ka
-   apna alag script unhi files ke andar hai.
+   REAL-TIME SYNC (Firebase se live updates)
+   Jaise hi kisi ke phone pe data change hoga,
+   sabke phone pe turant update ho jayega
 ================================ */
-
-document.addEventListener('DOMContentLoaded', function () {
-  renderHomePage();
+onSnapshot(membersRef, (snap) => {
+  membersCache = snap.exists() ? (snap.data().list || []) : [];
+  afterDataUpdate();
 });
+
+onSnapshot(expensesRef, (snap) => {
+  expensesCache = snap.exists() ? (snap.data().list || []) : [];
+  afterDataUpdate();
+});
+
+onSnapshot(itemsRef, (snap) => {
+  itemsCache = snap.exists() ? (snap.data().list || []) : [];
+  afterDataUpdate();
+});
+
+function afterDataUpdate() {
+  renderHomePage();
+  // Baaki pages (saman/rental/wxpense/history) ko batao ki data update hua
+  window.dispatchEvent(new Event('hisabDataUpdated'));
+}
+
+/* ================================
+   Sab functions ko window pe expose karo
+   taaki baaki HTML pages ke scripts inhe use kar sakein
+================================ */
+window.getMembers = getMembers;
+window.saveMembers = saveMembers;
+window.getExpenses = getExpenses;
+window.saveExpenses = saveExpenses;
+window.getItems = getItems;
+window.saveItems = saveItems;
+window.formatRupee = formatRupee;
+window.generateId = generateId;
+window.calculateBalances = calculateBalances;
+window.getTotalExpense = getTotalExpense;
+window.fillMemberSelect = fillMemberSelect;
+window.fillMemberCheckboxes = fillMemberCheckboxes;

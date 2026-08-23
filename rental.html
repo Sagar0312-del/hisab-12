@@ -50,13 +50,14 @@
         </div>
     </div>
 
-    <script src="sagar1203.js"></script>
+    <script type="module" src="sagar1203.js"></script>
     <script>
-        // Dropdown aur checkboxes fill karo
-        fillMemberSelect(document.getElementById('rentPaidBy'));
-        fillMemberCheckboxes(document.getElementById('rentSplitBox'), 'rentSplit');
+        function initPage() {
+            fillMemberSelect(document.getElementById('rentPaidBy'));
+            fillMemberCheckboxes(document.getElementById('rentSplitBox'), 'rentSplit');
+            renderRents();
+        }
 
-        // Aaj ki date default
         document.getElementById('rentDate').value = new Date().toISOString().split('T')[0];
 
         function renderRents() {
@@ -84,7 +85,6 @@
                 delBtn.onclick = () => {
                     const updated = getExpenses().filter(e => e.id !== exp.id);
                     saveExpenses(updated);
-                    renderRents();
                 };
                 li.appendChild(delBtn);
                 list.appendChild(li);
@@ -116,10 +116,10 @@
             this.reset();
             document.getElementById('rentDate').value = new Date().toISOString().split('T')[0];
             fillMemberCheckboxes(document.getElementById('rentSplitBox'), 'rentSplit');
-            renderRents();
         });
 
-        renderRents();
+        window.addEventListener('hisabDataUpdated', initPage);
+        initPage();
     </script>
 </body>
 </html>
